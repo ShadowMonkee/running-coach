@@ -1,0 +1,70 @@
+@if (activeState(); as state) {
+  <div class="prep-view">
+    <div class="prep-header">
+      <button class="back-btn" (click)="goBack()">←</button>
+      <span class="header-label">{{ state.weekLabel }}</span>
+    </div>
+
+    <div class="prep-body">
+      <div class="session-type-tag"
+           [style.background]="sessionColor(state.session.type) + '22'"
+           [style.color]="sessionColor(state.session.type)">
+        {{ sessionTypeLabel(state.session.type).toUpperCase() }}
+      </div>
+
+      <h1 class="session-name">{{ state.session.name }}</h1>
+      <p class="session-desc">{{ state.session.desc }}</p>
+
+      @if (totalDuration() > 0) {
+        <div class="session-meta">
+          <div class="meta-item">
+            <span class="meta-val">{{ totalDuration() | formatTime }}</span>
+            <span class="meta-label">duration</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-val">{{ state.session.intervals!.length }}</span>
+            <span class="meta-label">segments</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (state.session.intervals; as intervals) {
+      <div class="breakdown-section">
+        <div class="section-label">BREAKDOWN</div>
+
+        <!-- Interval bar -->
+        <div class="interval-bar">
+          @for (iv of intervals; track $index) {
+            <div class="bar-seg"
+                 [style.flex]="iv.duration"
+                 [style.background]="ivColor(iv.type)">
+            </div>
+          }
+        </div>
+
+        <!-- Segment list -->
+        <div class="segment-list">
+          @for (iv of intervals; track $index) {
+            <div class="segment-row">
+              <div class="seg-dot" [style.background]="ivColor(iv.type)"></div>
+              <span class="seg-label">{{ iv.label }}</span>
+              <span class="seg-time">{{ iv.duration | formatTime }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="start-footer">
+        <button class="start-btn" (click)="startSession()">START SESSION</button>
+      </div>
+    }
+  </div>
+}
+
+@if (!activeState()) {
+  <div class="no-session">
+    <p>No session selected.</p>
+    <button (click)="goBack()">← Back to plan</button>
+  </div>
+}

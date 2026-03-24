@@ -1,0 +1,76 @@
+<div class="plan-view">
+  <!-- Header -->
+  <div class="hero">
+    <div class="hero-label">16-WEEK PLAN</div>
+    <h1 class="hero-title">HALF MARATHON<br>TRAINING</h1>
+    <p class="hero-sub">Target: mid-July 2026 · 6 days/week · Start: March 2026</p>
+
+    <div class="progress-row">
+      <span class="progress-label">Progress</span>
+      <span class="progress-val">{{ completedCount() }}/{{ totalSessions }} sessions · {{ progress() }}%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progress()"></div>
+    </div>
+  </div>
+
+  <!-- Weeks -->
+  @for (week of weeksToShow(); track week.week; let wi = $index) {
+    <div class="week-row" [class.expanded]="expandedWeek() === week.week">
+
+      <button class="week-header" (click)="toggleWeek(week.week)">
+        <div class="week-badge" [style.background]="expandedWeek() === week.week ? phaseColor(week.phase) : 'var(--bg-card)'"
+             [style.border-color]="phaseColor(week.phase)">
+          <span [style.color]="expandedWeek() === week.week ? '#000' : phaseColor(week.phase)"
+                [class.small-num]="week.week === '∞'">{{ week.week }}</span>
+        </div>
+
+        <div class="week-info">
+          <div class="week-phase" [style.color]="phaseColor(week.phase)">
+            WEEK {{ week.week }} · {{ week.phase.toUpperCase() }}
+          </div>
+          <div class="week-goal">{{ week.goal }}</div>
+        </div>
+
+        <div class="week-right">
+          <span class="week-done" [class.complete]="weekDoneCount(week, wi) === weekTotal(week) && weekTotal(week) > 0">
+            {{ weekDoneCount(week, wi) }}/{{ weekTotal(week) }}
+          </span>
+          <span class="chevron">{{ expandedWeek() === week.week ? '▲' : '▼' }}</span>
+        </div>
+      </button>
+
+      @if (expandedWeek() === week.week) {
+        <div class="week-days">
+          @for (dp of week.days; track dp.day) {
+            <button class="day-card"
+                    [class.done]="sessionService.isSessionCompleted(wi + '-' + dp.day)"
+                    [class.inactive]="!dp.session.intervals"
+                    (click)="selectSession(dp.session, wi, dp.day, week.week)">
+              <div class="day-badge" [style.background]="sessionColor(dp.session.type) + '22'">
+                <span [style.color]="sessionColor(dp.session.type)">{{ dp.day }}</span>
+              </div>
+              <div class="day-info">
+                <div class="day-name">{{ dp.session.name }}</div>
+                @if (dp.session.duration > 0) {
+                  <div class="day-dur">{{ dp.session.duration }} min</div>
+                }
+              </div>
+              @if (sessionService.isSessionCompleted(wi + '-' + dp.day)) {
+                <span class="check">✓</span>
+              } @else if (dp.session.intervals) {
+                <span class="play">▶</span>
+              }
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (!showMaintenance() && !planComplete()) {
+    <button class="preview-btn" (click)="showMaintenance.set(true)">
+      Preview Maintenance Week ↓
+    </button>
+  }
+</div>

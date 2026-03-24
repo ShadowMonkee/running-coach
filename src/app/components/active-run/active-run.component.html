@@ -1,0 +1,99 @@
+@if (activeState(); as state) {
+  <div class="run-view">
+    <!-- Top progress bar -->
+    <div class="top-progress">
+      <div class="top-fill" [style.width.%]="progress() * 100"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="run-header">
+      <button class="back-btn" (click)="stop()">←</button>
+      <div class="header-center">
+        <div class="header-eyebrow">SESSION</div>
+        <div class="header-name">{{ state.session.name }}</div>
+      </div>
+      <div class="elapsed-time">{{ elapsed() | formatTime }}</div>
+    </div>
+
+    <!-- Interval strip -->
+    <div class="strip-wrap">
+      @if (state.session.intervals; as intervals) {
+        <div class="interval-strip">
+          @for (iv of intervals; track iv; let i = $index) {
+            <div class="strip-seg"
+                 [style.flex]="iv.duration"
+                 [style.background]="getSegmentStatus(i) === 'upcoming'
+                   ? 'rgba(255,255,255,0.05)'
+                   : getSegmentStatus(i) === 'done'
+                   ? ivColor(iv.type) + '55'
+                   : ivColor(iv.type)">
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Main display -->
+    <div class="main-display">
+      @if (isDone()) {
+        <!-- Completion state -->
+        <div class="completion">
+          <div class="completion-emoji">🎉</div>
+          <div class="completion-title">SESSION COMPLETE</div>
+          <p class="completion-sub">You're building something real. Keep going.</p>
+          <div class="completion-elapsed">{{ elapsed() | formatTime }} total</div>
+          <button class="complete-btn" (click)="markCompleteAndLeave()">Mark Complete →</button>
+        </div>
+      } @else {
+        <!-- Active / pre-start state -->
+        <div class="active-display">
+          <div class="current-label" [style.color]="currentColor()" [class.dim]="!isRunning() || isPaused()">
+            {{ isRunning() && intervalState() && !intervalState()!.done
+              ? intervalState()!.iv!.label.toUpperCase()
+              : 'READY TO RUN' }}
+          </div>
+
+          <div class="big-timer"
+               [style.color]="isRunning() ? currentColor() : 'var(--text-dim)'"
+               [class.paused]="isPaused()">
+            @if (isRunning() && intervalState() && !intervalState()!.done) {
+              {{ intervalState()!.left | formatTime }}
+            } @else {
+              {{ (state.session.intervals ? state.session.intervals[0].duration : 0) | formatTime }}
+            }
+          </div>
+
+          <div class="seg-counter">
+            @if (isRunning() && intervalState() && !intervalState()!.done) {
+              Segment {{ intervalState()!.idx + 1 }} of {{ state.session.intervals?.length }}
+            } @else {
+              Press start when you're ready
+            }
+          </div>
+
+          @if (isRunning() && !isPaused() && nextInterval(); as next) {
+            <div class="next-up">
+              <span class="next-label">NEXT →</span>
+              <span class="next-name" [style.color]="ivColor(next.type)">{{ next.label }}</span>
+              <span class="next-time"> · {{ next.duration | formatTime }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Controls -->
+    @if (!isDone()) {
+      <div class="controls">
+        @if (!isRunning()) {
+          <button class="btn-start" (click)="start()">START SESSION</button>
+        } @else {
+          <button class="btn-pause" [class.btn-resume]="isPaused()" (click)="togglePause()">
+            {{ isPaused() ? 'RESUME' : 'PAUSE' }}
+          </button>
+          <button class="btn-stop" (click)="stop()">Stop</button>
+        }
+      </div>
+    }
+  </div>
+}

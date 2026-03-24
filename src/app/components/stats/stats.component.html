@@ -1,0 +1,78 @@
+<div class="stats-view">
+  <div class="stats-header">
+    <div class="header-label">STATS</div>
+    <h2 class="header-title">YOUR PROGRESS</h2>
+  </div>
+
+  <!-- Progress ring -->
+  <div class="ring-wrap">
+    <svg width="140" height="140" viewBox="0 0 140 140">
+      <circle cx="70" cy="70" [attr.r]="radius" fill="none" stroke="var(--border)" stroke-width="9"/>
+      <circle cx="70" cy="70" [attr.r]="radius" fill="none"
+              stroke="var(--accent)" stroke-width="9"
+              [attr.stroke-dasharray]="circumference"
+              [attr.stroke-dashoffset]="dashOffset()"
+              stroke-linecap="round"
+              transform="rotate(-90 70 70)"/>
+      <text x="70" y="66" text-anchor="middle" fill="var(--accent)"
+            font-family="Bebas Neue" font-size="32">{{ progress() }}%</text>
+      <text x="70" y="84" text-anchor="middle" fill="var(--text-muted)"
+            font-family="DM Sans" font-size="11" font-weight="600">COMPLETE</text>
+    </svg>
+  </div>
+
+  <!-- Stat grid -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-num">{{ completedCount() }}</div>
+      <div class="stat-name">Sessions Done</div>
+      <div class="stat-sub">of {{ totalSessions }} total</div>
+    </div>
+
+    <div class="stat-card orange">
+      <div class="stat-num">W{{ currentWeek() }}</div>
+      <div class="stat-name">Current Week</div>
+      <div class="stat-sub">of 16 weeks</div>
+    </div>
+
+    <div class="stat-card purple">
+      <div class="stat-num">{{ estimatedMinutes() }}</div>
+      <div class="stat-name">Min Logged</div>
+      <div class="stat-sub">estimated</div>
+    </div>
+
+    <div class="stat-card cyan">
+      <div class="stat-num">{{ weeksLeft() }}</div>
+      <div class="stat-name">Weeks Left</div>
+      <div class="stat-sub">to race day</div>
+    </div>
+  </div>
+
+  <!-- Race day card -->
+  <div class="race-card">
+    <div class="race-label">🏁 Race Day Target</div>
+    <div class="race-info">{{ raceDate }} · Half Marathon · 21.1km</div>
+    <div class="race-sub">~16 weeks from {{ startDate }}</div>
+  </div>
+
+  <!-- Phase breakdown -->
+  <div class="phases-section">
+    <div class="section-label">TRAINING PHASES</div>
+    <div class="phase-list">
+      @for (phase of [
+        { name: 'Foundation', weeks: '1–3', color: 'var(--phase-foundation)' },
+        { name: 'Base Building', weeks: '4–8', color: 'var(--phase-base)' },
+        { name: 'HM Training', weeks: '9–14', color: 'var(--phase-hm)' },
+        { name: 'Taper', weeks: '15', color: 'var(--phase-taper)' },
+        { name: 'Race Week', weeks: '16', color: 'var(--phase-race)' },
+        { name: 'Maintenance', weeks: '∞', color: 'var(--phase-maintenance)' }
+      ]; track phase.name) {
+        <div class="phase-row">
+          <div class="phase-dot" [style.background]="phase.color"></div>
+          <span class="phase-name">{{ phase.name }}</span>
+          <span class="phase-weeks">Weeks {{ phase.weeks }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>

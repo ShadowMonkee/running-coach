@@ -1,0 +1,99 @@
+<div class="custom-view">
+  <div class="custom-header">
+    <div class="header-label">CUSTOM RUN</div>
+    <h2 class="header-title">BUILD YOUR SESSION</h2>
+    <p class="header-sub">Set your intervals and let the coach guide you.</p>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-val">{{ totalSeconds() | formatTime }}</div>
+      <div class="stat-key">TOTAL</div>
+    </div>
+    <div class="stat run-stat">
+      <div class="stat-val">{{ run() }}min</div>
+      <div class="stat-key">RUN</div>
+    </div>
+    <div class="stat walk-stat">
+      <div class="stat-val">{{ walk() }}min</div>
+      <div class="stat-key">WALK</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">{{ sets() }}×</div>
+      <div class="stat-key">SETS</div>
+    </div>
+  </div>
+
+  <!-- Preview bar -->
+  <div class="preview-section">
+    <div class="section-label">PREVIEW</div>
+    <div class="preview-bar">
+      @if (builtSession().intervals; as intervals) {
+        @for (iv of intervals; track $index) {
+          <div class="preview-seg"
+               [style.flex]="iv.duration"
+               [style.background]="ivColor(iv.type)">
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- Sliders -->
+  <div class="sliders">
+    <div class="slider-row">
+      <div class="slider-top">
+        <span class="slider-label">Warm-up</span>
+        <span class="slider-val">{{ warmup() }}min</span>
+      </div>
+      <input type="range" min="0" max="10" step="0.5"
+             [value]="warmup()" (input)="warmup.set(+$any($event.target).value)">
+      <div class="slider-bounds"><span>0min</span><span>10min</span></div>
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-top">
+        <span class="slider-label">Run interval</span>
+        <span class="slider-val run-col">{{ run() }}min</span>
+      </div>
+      <input type="range" min="0.5" max="10" step="0.5"
+             [value]="run()" (input)="run.set(+$any($event.target).value)">
+      <div class="slider-bounds"><span>0.5min</span><span>10min</span></div>
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-top">
+        <span class="slider-label">Walk / Recovery</span>
+        <span class="slider-val walk-col">{{ walk() }}min</span>
+      </div>
+      <input type="range" min="0.5" max="10" step="0.5"
+             [value]="walk()" (input)="walk.set(+$any($event.target).value)">
+      <div class="slider-bounds"><span>0.5min</span><span>10min</span></div>
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-top">
+        <span class="slider-label">Number of sets</span>
+        <span class="slider-val">{{ sets() }}</span>
+      </div>
+      <input type="range" min="1" max="20" step="1"
+             [value]="sets()" (input)="sets.set(+$any($event.target).value)">
+      <div class="slider-bounds"><span>1</span><span>20</span></div>
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-top">
+        <span class="slider-label">Cool-down</span>
+        <span class="slider-val">{{ cooldown() }}min</span>
+      </div>
+      <input type="range" min="0" max="10" step="0.5"
+             [value]="cooldown()" (input)="cooldown.set(+$any($event.target).value)">
+      <div class="slider-bounds"><span>0min</span><span>10min</span></div>
+    </div>
+  </div>
+
+  <div class="start-footer">
+    <button class="start-btn" (click)="startCustomRun()">START CUSTOM RUN</button>
+  </div>
+</div>
